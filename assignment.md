@@ -17,7 +17,33 @@ Each entity has the following attributes:
 Answer:
 
 ```dbml
+Table users {
+  id int [pk, increment]
+  username varchar
+  email varchar
+  created_at datetime
+}
 
+Table posts {
+  id int [pk, increment]
+  title varchar
+  body text [note: 'Content of the post']
+  user_id int
+  status boolean
+  created_at datetime
+}
+
+Table follows {
+  following_user_id int
+  followed_user_id int
+  created_at datetime
+}
+
+Ref: posts.user_id > users.id // many-to-one
+
+Ref: users.id < follows.following_user_id
+
+Ref: users.id < follows.followed_user_id
 ```
 ### Question 2
 
@@ -26,7 +52,8 @@ Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1
 Answer:
 
 ```sql
-
+CREATE UNIQUE INDEX idx_student_email
+ON lesson.students(email);
 ```
 
 ### Question 3
@@ -36,7 +63,9 @@ Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1
 Answer:
 
 ```sql
-
+UPDATE lesson.teachers
+SET email = 'john.doe@school.com'
+WHERE name = 'John Doe';
 ```
 ### Question 4
 
@@ -48,7 +77,16 @@ Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.
   Show the counts in descending order.
 
 ```sql
-
+SELECT
+    CASE
+        WHEN resale_price < 400000 THEN 'Budget'
+        WHEN resale_price <= 700000 THEN 'Mid-Range'
+        ELSE 'Premium'
+    END as price_category,
+    COUNT(*) as number_of_flats
+FROM resale_flat_prices_2017
+GROUP BY price_category
+ORDER BY number_of_flats DESC;
 ```
 
 ### Question 5
@@ -56,7 +94,14 @@ Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.
 Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.4-sql-basic-dml/tree/main/db ),select the minimum and maximum price of flats sold in each town during the first quarter of 2017 (January to March).
 
 ```sql
-
+SELECT
+    town,
+    MIN(resale_price) as min_price,
+    MAX(resale_price) as max_price
+FROM resale_flat_prices_2017
+WHERE month IN ('2017-01', '2017-02', '2017-03')
+GROUP BY town
+ORDER BY town;
 ```
 ### Question 6
 
@@ -65,7 +110,12 @@ Using the data provided in lesson 1.5 ( https://github.com/su-ntu-ctp/5m-data-1.
 Answer:
 
 ```sql
-
+SELECT
+    id,
+    car_id,
+    travel_time,
+    SUM(travel_time) OVER (PARTITION BY car_id ORDER BY id) AS running_total
+FROM claim;
 ```
 
 ### Question 7
@@ -75,7 +125,20 @@ Using the data provided in lesson 1.5 ( https://github.com/su-ntu-ctp/5m-data-1.
 Answer:
 
 ```sql
-
+WITH avg_resale_by_use AS (
+    SELECT
+        car_use,
+        AVG(resale_value) AS avg_resale
+    FROM car
+    GROUP BY car_use
+)
+SELECT
+    c.id,
+    c.resale_value,
+    c.car_use
+FROM car c
+INNER JOIN avg_resale_by_use a ON c.car_use = a.car_use
+WHERE c.resale_value < a.avg_resale;
 ```
 
 ## Submission
