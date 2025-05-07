@@ -47,13 +47,13 @@ Ref: users.id < follows.followed_user_id
 ```
 ### Question 2
 
-Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1.3-sql-basic-ddl/tree/solutions/data ), write the SQL statement to create a unique index on the `email` column of the `students` table in the `lesson` schema.
+Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1.3-sql-basic-ddl/tree/solutions/data ), Write the SQL statement to alter the teachers table in the lesson schema to add a new column subject of type VARCHAR.
 
 Answer:
 
 ```sql
-CREATE UNIQUE INDEX idx_student_email
-ON lesson.students(email);
+ALTER TABLE lesson.teachers
+ADD COLUMN subject VARCHAR;
 ```
 
 ### Question 3
